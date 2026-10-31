@@ -6,6 +6,7 @@
 [![Vercel Deployment](https://img.shields.io/badge/Deployed-Vercel%20Production-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://conversational-data-analytics-agent-coral.vercel.app)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Flask 3.0](https://img.shields.io/badge/Frontend-Flask%20%2B%20Plotly-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![LLM: Groq / Gemini](https://img.shields.io/badge/LLM-Groq%20%7C%20Gemini%20%7C%20Ollama-F55036?style=for-the-badge)](https://groq.com/)
 [![RAG Architecture](https://img.shields.io/badge/Engine-Local%20TF--IDF%20RAG-8A2BE2?style=for-the-badge)](https://scikit-learn.org/)
 [![Test Suite](https://img.shields.io/badge/Pytest-123%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
@@ -97,7 +98,11 @@ Every query yields an unambiguous, executive-ready analytical card:
 
 ### 1. Prerequisites
 - **Python 3.10+** (Tested on Python 3.12)
-- (Optional) [Google Gemini API Key](https://aistudio.google.com/) for cloud LLM reasoning OR [Ollama](https://ollama.com/) for 100% offline local privacy.
+- An LLM Provider Key or Local Daemon:
+  - ⚡ **Groq Cloud API Key** (Recommended for ultra-fast LPU inference, e.g. `llama-3.3-70b-versatile`)
+  - 🌐 **Google Gemini API Key** (e.g. `gemini-1.5-flash` / `gemini-2.5-flash`)
+  - 💻 **Ollama Daemon** (100% offline local privacy, e.g. `qwen2.5:7b` / `llama3`)
+  - 🧪 **Deterministic Mock** (Zero API keys required for offline test runs)
 
 ### 2. Local Installation
 ```bash
@@ -120,12 +125,25 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 ```
-Edit `.env` with your settings:
+Edit `.env` with your preferred LLM provider:
 ```ini
 FLASK_ENV=development
 SECRET_KEY=dev-secret-key-123
-LLM_PROVIDER=gemini       # Options: "gemini", "ollama", or "mock"
-GEMINI_API_KEY=your_gemini_api_key_here
+
+# Option A: Ultra-Fast Groq Cloud LPU (Recommended)
+LLM_PROVIDER=groq
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# Option B: Google Gemini Cloud
+# LLM_PROVIDER=gemini
+# GEMINI_API_KEY=your_gemini_api_key_here
+# GEMINI_MODEL=gemini-1.5-flash
+
+# Option C: 100% Offline Local Ollama
+# LLM_PROVIDER=ollama
+# OLLAMA_BASE_URL=http://localhost:11434
+# OLLAMA_MODEL=qwen2.5:7b
 ```
 
 ### 4. Launch the Web Application
