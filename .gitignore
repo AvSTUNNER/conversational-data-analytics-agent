@@ -43,3 +43,7 @@ datasets/validation/online_retail.xlsx
 # Project Synopsis Documents & Generator (excluded from public repo)
 Project_Synopsis_*.docx
 generate_synopsis.py
+
+# Important docx folder (strictly local documentation)
+important docx/
+important docx/**
