@@ -15,21 +15,27 @@ An enterprise-grade conversational data analysis system designed to translate na
 
 > **The Fundamental Rule**: The LLM decides *what* analysis to run; Pandas deterministically calculates *all numbers*.
 
+<p align="center">
+  <img src="architecture_flowchart.png" alt="Dual-Engine Architecture Flowchart" width="100%">
+</p>
+
 ```
-+------------------+      +-------------------+      +---------------------+
-| User Query & CSV | ---> | Dataset Profiler  | ---> | LLM Analysis Planner|
-+------------------+      +-------------------+      +---------------------+
-                                                                |
-                                                                v Structured AnalysisPlan (JSON)
-                                                     +---------------------+
-                                                     | Strict Plan Validator|
-                                                     +---------------------+
-                                                                |
-                                                                v Validated Plan
-+------------------+      +-------------------+      +---------------------+
-| 4-Part Response  | <--- | Chart Generator   | <--- | Deterministic Pandas|
-| (Answer+Table+UI)|      | (Plotly Engine)   |      | Execution Engine    |
-+------------------+      +-------------------+      +---------------------+
+┌─────────────────┐       ┌───────────────────────┐       ┌────────────────────────┐
+│ User Query & CSV│ ────> │ Semantic Query Router │ ────> │  LLM Analysis Planner  │
+└─────────────────┘       └───────────────────────┘       └────────────────────────┘
+                                      │                                │
+                                      │ (Knowledge Queries)            ▼ Structured AnalysisPlan (JSON)
+                                      ▼                   ┌────────────────────────┐
+                          ┌───────────────────────┐       │  Strict Plan Validator │ (AST Trust Boundary)
+                          │ Local RAG Vector Store│       └────────────────────────┘
+                          └───────────────────────┘                    │
+                                      │                                ▼ Approved Execution Plan
+                                      │                   ┌────────────────────────┐
+                                      ▼                   │  Deterministic Pandas  │
+┌─────────────────┐       ┌───────────────────────┐       │    Execution Engine    │
+│ 4-Part Response │ <──── │ Interactive Plotly/UI │ <──── └────────────────────────┘
+│ (Answer+Table)  │       │    Chart Generator    │
+└─────────────────┘       └───────────────────────┘
 ```
 
 1. **Zero LLM Code Execution**: No `eval()`, `exec()`, or runtime script execution.
