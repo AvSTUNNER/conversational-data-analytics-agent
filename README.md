@@ -42,32 +42,12 @@ By decoupling natural-language understanding from numerical calculation, math er
   <img src="architecture_flowchart.png" alt="Dual-Engine Architecture Flowchart" width="95%">
 </p>
 
-```
-  ┌─────────────────────────┐
-  │  NATURAL LANGUAGE QUERY │
-  └────────────┬────────────┘
-               ▼
-  ┌─────────────────────────┐      Knowledge Query      ┌─────────────────────────┐
-  │  SEMANTIC QUERY ROUTER  │ ────────────────────────> │  LOCAL RAG VECTOR STORE │
-  └────────────┬────────────┘                           │  (TF-IDF + Cosine Sim)  │
-               │ Analytical Query                       └────────────┬────────────┘
-               ▼                                                     │ Grounded Text
-  ┌─────────────────────────┐                                        ▼
-  │   LLM ANALYSIS PLANNER  │                           ┌─────────────────────────┐
-  │   (Pydantic JSON IR)    │                           │   4-PART UI RESPONSE    │
-  └────────────┬────────────┘                           │   • Factual Direct Answer
-               ▼                                        │   • Formatted Evidence Table
-  ┌───────────────────────────────────────────────┐     │   • Interactive Plotly Viz
-  │  🔒 STRICT AST TRUST BOUNDARY                 │     │   • Verifiable Audit Trail
-  │  ┌─────────────────────────────────────────┐  │     └─────────────────────────┘
-  │  │  Rigid AST Schema & Column Validator    │  │                  ▲
-  │  └────────────────────┬────────────────────┘  │                  │
-  │                       ▼                       │                  │ Exact Numbers
-  │  ┌─────────────────────────────────────────┐  │                  │
-  │  │  Deterministic Pandas Execution Engine  │──┴──────────────────┘
-  │  └─────────────────────────────────────────┘  │
-  └───────────────────────────────────────────────┘
-```
+### 3. Strict AST Trust Boundary & Numerical Integrity
+Visualizing the decoupling of semantic interpretation from deterministic numerical calculation:
+
+<p align="center">
+  <img src="architecture_trust_boundary.png" alt="Strict AST Trust Boundary Diagram" width="95%">
+</p>
 
 ---
 
