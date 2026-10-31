@@ -50,47 +50,79 @@ cp .env.example .env
 
 ---
 
-## 3. Server Startup Options
+## 3. Cloud Serverless Deployment (Vercel)
 
-### Option A: Direct Production-Hardened Python Launch
+The repository is pre-configured for zero-friction serverless deployment on **Vercel** via `vercel.json` and `api/index.py`.
 
-Using `app_flask.py` (binds to `$HOST` and `$PORT` with `debug=False` by default):
+### Architecture & Key Configuration Fixes
+1. **Disabled Zero-Config Auto-Detection (`"framework": null`)**:  
+   By default, Vercel scans repositories for root Flask entrypoints and creates implicit framework handlers. To ensure all incoming traffic reaches our specialized serverless WSGI entrypoint (`api/index.py`), `"framework": null` is explicitly configured in `vercel.json`.
+2. **Wildcard Routing & Native Passthrough**:  
+   All requests (`/(.*)`) are routed cleanly to `/api/index`. Vercel's Python runtime natively passes the browser's true requested path as WSGI `PATH_INFO`, preventing 404 router mismatch loops.
+3. **Optimized Serverless Bundle (< 150 MB)**:  
+   Heavy compiled binary libraries (`scipy`, `scikit-learn`) were removed in favor of a zero-external-dependency, pure Python + NumPy TF-IDF vectorizer (`src/rag/embeddings.py`), avoiding AWS Lambda's 500 MB `LAMBDA_SIZE_EXCEEDED` ceiling.
+4. **Edge CDN Static Asset Serving**:  
+   Static stylesheets and scripts are hosted from the root `public/static/` directory so Vercel serves them directly via Edge CDN without cold starts.
+5. **Dataset Bundling**:  
+   `vercel.json` includes `datasets/**` inside the function bundle so demo datasets (e.g. Superstore) load automatically on cold start.
 
+### Deploying to Vercel
+1. Push your repository to GitHub.
+2. Import the repository into [Vercel](https://vercel.com/new).
+3. Set your environment variables in the Vercel dashboard:
+   - `GEMINI_API_KEY` (Required if using Gemini provider)
+   - `SECRET_KEY` (Set to a secure random string)
+4. Click **Deploy**.
+
+---
+
+## 4. Alternative Cloud Deployments
+
+### Option A: Netlify Serverless Functions
+Pre-configured via `netlify.toml` and `netlify/functions/app.py`:
+- Static directory: `publish = "public"`
+- Serverless adapter: `serverless-wsgi>=3.0.0`
+- Wildcard redirect: `/* -> /.netlify/functions/app` with `force = true`
+
+### Option B: Container / PaaS (Render, Railway, Fly.io, Heroku)
+Pre-configured via root `Procfile`:
+```
+web: gunicorn wsgi:app --bind 0.0.0.0:$PORT
+```
+These container platforms run `wsgi.py` continuously in persistent memory with no serverless bundle size restrictions.
+
+---
+
+## 5. Local Server Startup Options
+
+### Option A: Direct Local Python Launch
 ```bash
 python app_flask.py
 ```
+Starts the local development server at `http://127.0.0.1:5000`.
 
 ### Option B: Production WSGI Server with Gunicorn (Linux / macOS)
-
-For multi-worker concurrency and production resilience:
-
 ```bash
 gunicorn -w 4 -b 0.0.0.0:5000 wsgi:app
 ```
-
-Or using custom timeout for long analytical workloads:
-
+Or with custom timeout for analytical workloads:
 ```bash
 gunicorn --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:5000 wsgi:app
 ```
 
-### Option C: Production WSGI Server with Waitress (Windows / Cross-Platform)
-
+### Option C: Production WSGI Server with Waitress (Windows)
 ```bash
 waitress-serve --host=0.0.0.0 --port=5000 wsgi:app
 ```
 
-### Option D: Streamlit UI Alternative (Optional)
-
-If preferred for lightweight local dashboarding:
-
+### Option D: Streamlit UI Alternative (Legacy)
 ```bash
 streamlit run app.py --server.port 8501
 ```
 
 ---
 
-## 4. File Upload Constraints & Security Hardening
+## 6. File Upload Constraints & Security Hardening
 
 - **Max Payload Size:** `16 MB` (`MAX_CONTENT_LENGTH = 16 * 1024 * 1024`). Files exceeding this limit are rejected automatically with HTTP 413.
 - **Allowed Dataset Formats:** `.csv`, `.xls`, `.xlsx`.
@@ -101,7 +133,7 @@ streamlit run app.py --server.port 8501
 
 ---
 
-## 5. LLM Provider Configuration & Behavior
+## 7. LLM Provider Configuration & Behavior
 
 The system is 100% provider-agnostic and abstracts models behind `LLMClient`:
 
@@ -114,7 +146,7 @@ When an API-backed provider is configured without its required key, the system f
 
 ---
 
-## 6. Dynamic Knowledge & RAG Behavior
+## 8. Dynamic Knowledge & RAG Behavior
 
 - **Zero External Vector DB:** Embeddings and similarity search run locally in-memory using an optimized TF-IDF vector space model with sublinear term-frequency scaling and cosine similarity.
 - **Dataset Isolation:** Every dataset maintains an isolated index. Retrievals for the active dataset never cross-contaminate with other datasets.
@@ -123,8 +155,8 @@ When an API-backed provider is configured without its required key, the system f
 
 ---
 
-## 7. Known Architectural Limitations
+## 9. Known Architectural Considerations
 
-1. **In-Memory Session State:** The current version utilizes in-memory application state (`AppStateManager`). Uploaded custom datasets, uploaded knowledge files, and ephemeral vector indices reside in server process memory and will reset if the server process restarts.
-2. **Single Active Dataset Per Process:** The in-memory state manager tracks one globally active dataset at a time.
-3. **File Size Capacity:** Dataframes and Excel workbooks are loaded into pandas memory. Datasets should ideally be under 500,000 rows for optimal sub-second interactive analysis.
+1. **In-Memory Session State in Serverless:** When deployed on serverless runtimes (Vercel/Netlify), function containers are ephemeral. Uploaded custom CSVs persist within that container instance. For applications requiring multi-user persistent uploads across stateless instances, deploying via the provided `Procfile` on a persistent container platform (Render/Railway) or adding Redis/S3 storage is recommended.
+2. **Single Active Dataset Per Worker:** The in-memory state manager tracks one globally active dataset at a time per worker process.
+3. **Dataset Capacity:** Dataframes and Excel workbooks are loaded into memory. Datasets should ideally be under 500,000 rows for optimal sub-second interactive analysis.
