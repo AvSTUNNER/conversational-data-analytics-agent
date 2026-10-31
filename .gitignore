@@ -39,3 +39,7 @@ Thumbs.db
 
 # Large non-demo dataset files (prevents Vercel serverless size exceed)
 datasets/validation/online_retail.xlsx
+
+# Project Synopsis Documents & Generator (excluded from public repo)
+Project_Synopsis_*.docx
+generate_synopsis.py
