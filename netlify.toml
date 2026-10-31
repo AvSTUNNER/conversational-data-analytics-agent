@@ -1,17 +1,19 @@
 [build]
   functions = "netlify/functions"
-  publish = "src/web/static"
+  publish = "public"
 
 [build.environment]
   PYTHON_VERSION = "3.12"
 
-# Redirect all root & app requests to the Netlify serverless function
+# Static assets served from public/
 [[redirects]]
   from = "/static/*"
-  to = "/:splat"
+  to = "/static/:splat"
   status = 200
 
+# Route all dynamic application paths to the serverless function
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/app"
   status = 200
+  force = true
