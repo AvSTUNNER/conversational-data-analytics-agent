@@ -23,11 +23,21 @@ class VercelPathFixer:
 
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO", "")
-        # If Vercel rewrote request to /api/index or /api/index/..., restore original path
-        if path == "/api/index":
-            environ["PATH_INFO"] = "/"
-        elif path.startswith("/api/index/"):
-            environ["PATH_INFO"] = path[len("/api/index"):]
+        
+        # 1. Strip any vercel api prefixes
+        prefixes = ["/api/index.py", "/api/index", "/api"]
+        for prefix in prefixes:
+            if path == prefix:
+                path = "/"
+                break
+            elif path.startswith(prefix + "/"):
+                path = path[len(prefix):]
+                break
+
+        if not path:
+            path = "/"
+            
+        environ["PATH_INFO"] = path
         return self.wsgi_app(environ, start_response)
 
 app = VercelPathFixer(flask_app)
