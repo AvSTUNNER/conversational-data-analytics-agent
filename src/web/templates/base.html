@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Conversational Data Analysis Assistant (HCL P_123){% endblock %}</title>
+  <!-- Modern Font & Plotly.js -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-title">
+          <span>📊 DataAnalyst</span>
+          <span class="brand-badge">HCL P_123</span>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Collapse Sidebar">
+          ◀
+        </button>
+      </div>
+
+      <!-- Navigation Menu -->
+      <ul class="nav-menu">
+        <li class="nav-section-title">Core Analysis</li>
+        <li class="nav-item {% if active_page == 'ask' %}active{% endif %}">
+          <a href="{{ url_for('ask_page') }}">
+            <span class="nav-icon">💬</span>
+            <span>Ask Questions</span>
+          </a>
+        </li>
+        <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+          <a href="{{ url_for('dashboard_page') }}">
+            <span class="nav-icon">📈</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item {% if active_page == 'dataset' %}active{% endif %}">
+          <a href="{{ url_for('dataset_page') }}">
+            <span class="nav-icon">📁</span>
+            <span>Dataset</span>
+          </a>
+        </li>
+        <li class="nav-item {% if active_page == 'visualizations' %}active{% endif %}">
+          <a href="{{ url_for('visualizations_page') }}">
+            <span class="nav-icon">📊</span>
+            <span>Visualizations</span>
+          </a>
+        </li>
+
+        <li class="nav-section-title">Context & Engine</li>
+        <li class="nav-item {% if active_page == 'knowledge' %}active{% endif %}">
+          <a href="{{ url_for('knowledge_page') }}">
+            <span class="nav-icon">🧠</span>
+            <span>Knowledge & RAG</span>
+          </a>
+        </li>
+        <li class="nav-item {% if active_page == 'pipeline' %}active{% endif %}">
+          <a href="{{ url_for('pipeline_page') }}">
+            <span class="nav-icon">⚡</span>
+            <span>Pipeline Architecture</span>
+          </a>
+        </li>
+        <li class="nav-item {% if active_page == 'settings' %}active{% endif %}">
+          <a href="{{ url_for('settings_page') }}">
+            <span class="nav-icon">⚙️</span>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Active Dataset Status in Sidebar -->
+      <div class="sidebar-dataset-status">
+        <div class="dataset-status-header">Active Dataset</div>
+        <div class="dataset-status-name" title="{{ state.dataset_name or 'None loaded' }}">
+          {{ state.dataset_name or 'None loaded' }}
+        </div>
+        {% if state.profile %}
+        <div class="dataset-status-meta">
+          <span>{{ "{:,}".format(state.profile.row_count) }} rows</span>
+          <span>•</span>
+          <span>{{ state.profile.column_count }} cols</span>
+        </div>
+        {% endif %}
+      </div>
+    </aside>
+
+    <!-- Floating Toggle Button (Visible when sidebar collapsed) -->
+    <button class="floating-toggle-btn" id="floatingToggleBtn" title="Expand Sidebar">
+      ▶
+    </button>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-title-container">
+          <h1 class="navbar-page-title">{% block page_header %}Ask Questions{% endblock %}</h1>
+        </div>
+        <div class="navbar-dataset-badge">
+          <span class="status-dot"></span>
+          <span>{{ state.dataset_name or 'No Dataset Active' }}</span>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <main class="content-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div style="margin-bottom: 1.5rem;">
+              {% for category, message in messages %}
+                <div class="card" style="padding: 0.85rem 1.25rem; margin-bottom: 0.75rem; border-left: 4px solid {% if category == 'error' %}var(--accent-coral){% elif category == 'success' %}var(--accent-green){% else %}var(--accent-secondary){% endif %};">
+                  <span style="font-weight: 600; color: {% if category == 'error' %}var(--accent-coral){% elif category == 'success' %}var(--accent-green){% else %}var(--accent-secondary){% endif %};">
+                    {% if category == 'error' %}⚠️ Error:{% elif category == 'success' %}✅ Success:{% else %}ℹ️ Notice:{% endif %}
+                  </span>
+                  <span style="margin-left: 0.5rem; color: var(--text-primary); font-size: 0.9rem;">{{ message }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

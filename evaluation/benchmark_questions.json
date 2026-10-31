@@ -1,0 +1,451 @@
+[
+  {
+    "id": "q01",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "How many total orders are in the dataset?",
+    "expected_operation": "count"
+  },
+  {
+    "id": "q02",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "How many distinct orders were placed?",
+    "expected_operation": "count",
+    "expected_target_column": "Order ID"
+  },
+  {
+    "id": "q03",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the average sales amount?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q04",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the total overall profit?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q05",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the median discount rate?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Discount"
+  },
+  {
+    "id": "q06",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the maximum quantity ordered?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Quantity"
+  },
+  {
+    "id": "q07",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the minimum sales value?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q08",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "How many unique customers made purchases?",
+    "expected_operation": "count",
+    "expected_target_column": "Customer ID"
+  },
+  {
+    "id": "q09",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "What is the total quantity of items sold?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Quantity"
+  },
+  {
+    "id": "q10",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "easy",
+    "question": "How many rows are in this table?",
+    "expected_operation": "count"
+  },
+  {
+    "id": "q11",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Which category generated the highest profit?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Category"],
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q12",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Top 5 products by total sales",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Product Name"],
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q13",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Show total profit by region",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Region"],
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q14",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "What is the average sales per customer segment?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Segment"],
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q15",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Show monthly sales trends over time",
+    "expected_operation": "trend",
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q16",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "What is the correlation between sales and profit?",
+    "expected_operation": "correlation"
+  },
+  {
+    "id": "q17",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Are there outliers in the sales numbers?",
+    "expected_operation": "outliers",
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q18",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Which ship mode is used the most?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Ship Mode"]
+  },
+  {
+    "id": "q19",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Total sales by sub-category",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Sub-Category"],
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q20",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "medium",
+    "question": "Show yearly sales trend",
+    "expected_operation": "trend",
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q21",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "Which region generated the highest total profit in the Technology category?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Region"],
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q22",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "What is the average discount for Corporate customer segment?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Discount"
+  },
+  {
+    "id": "q23",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "Total profit for orders shipped with Same Day mode",
+    "expected_operation": "aggregation",
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q24",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "Show relationship between discount and profit",
+    "expected_operation": "correlation"
+  },
+  {
+    "id": "q25",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "Are there outliers in profit?",
+    "expected_operation": "outliers",
+    "expected_target_column": "Profit"
+  },
+  {
+    "id": "q26",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "What was the employee turnover rate last quarter?",
+    "expected_operation": "unsupported"
+  },
+  {
+    "id": "q27",
+    "dataset": "datasets/demo/sample_-_superstore.xls",
+    "sheet": "Orders",
+    "tier": "hard",
+    "question": "What is the current inflation rate in New York?",
+    "expected_operation": "unsupported"
+  },
+  {
+    "id": "q28",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "How many total customers are in the telco dataset?",
+    "expected_operation": "count"
+  },
+  {
+    "id": "q29",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the average monthly charge?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "MonthlyCharges"
+  },
+  {
+    "id": "q30",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the average tenure of customers?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "tenure"
+  },
+  {
+    "id": "q31",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the maximum monthly charge?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "MonthlyCharges"
+  },
+  {
+    "id": "q32",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the minimum tenure?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "tenure"
+  },
+  {
+    "id": "q33",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "What is the average monthly charge by contract type?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Contract"],
+    "expected_target_column": "MonthlyCharges"
+  },
+  {
+    "id": "q34",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "Average tenure by internet service provider",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["InternetService"],
+    "expected_target_column": "tenure"
+  },
+  {
+    "id": "q35",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "What is the relationship between tenure and monthly charges?",
+    "expected_operation": "correlation"
+  },
+  {
+    "id": "q36",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "Are there outliers in monthly charges?",
+    "expected_operation": "outliers",
+    "expected_target_column": "MonthlyCharges"
+  },
+  {
+    "id": "q37",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "What is the average monthly charge for SeniorCitizen customers?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "MonthlyCharges"
+  },
+  {
+    "id": "q38",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "Average tenure by payment method for churned customers",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["PaymentMethod"],
+    "expected_target_column": "tenure"
+  },
+  {
+    "id": "q39",
+    "dataset": "datasets/validation/telco_churn.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "What is the stock market ticker for this telecom company?",
+    "expected_operation": "unsupported"
+  },
+  {
+    "id": "q40",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "How many visitor sessions are recorded?",
+    "expected_operation": "count"
+  },
+  {
+    "id": "q41",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the average bounce rate?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "BounceRates"
+  },
+  {
+    "id": "q42",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "What is the average exit rate?",
+    "expected_operation": "aggregation",
+    "expected_target_column": "ExitRates"
+  },
+  {
+    "id": "q43",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "What is the average page value by visitor type?",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["VisitorType"],
+    "expected_target_column": "PageValues"
+  },
+  {
+    "id": "q44",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "What is the relationship between bounce rates and exit rates?",
+    "expected_operation": "correlation"
+  },
+  {
+    "id": "q45",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "Average product related duration by month",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Month"],
+    "expected_target_column": "ProductRelated_Duration"
+  },
+  {
+    "id": "q46",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "Average page values by operating system for weekend sessions",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["OperatingSystems"],
+    "expected_target_column": "PageValues"
+  },
+  {
+    "id": "q47",
+    "dataset": "datasets/validation/online_shoppers.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "What was the stock price of Google during Black Friday?",
+    "expected_operation": "unsupported"
+  },
+  {
+    "id": "q48",
+    "dataset": "datasets/synthetic/business.csv",
+    "sheet": 0,
+    "tier": "easy",
+    "question": "How many records are in the business dataset?",
+    "expected_operation": "count"
+  },
+  {
+    "id": "q49",
+    "dataset": "datasets/synthetic/business.csv",
+    "sheet": 0,
+    "tier": "medium",
+    "question": "Total sales by category",
+    "expected_operation": "groupby_aggregate",
+    "expected_group_by": ["Category"],
+    "expected_target_column": "Sales"
+  },
+  {
+    "id": "q50",
+    "dataset": "datasets/synthetic/business.csv",
+    "sheet": 0,
+    "tier": "hard",
+    "question": "Correlation between sales and profit in business data",
+    "expected_operation": "correlation"
+  }
+]

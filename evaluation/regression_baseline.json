@@ -1,0 +1,294 @@
+[
+  {
+    "query": "Top 5 products by total sales",
+    "planner_output": {
+      "operation": "groupby_aggregate",
+      "target_column": "Sales",
+      "group_by_columns": [
+        "Product Name"
+      ],
+      "aggregation": "sum",
+      "filters": [],
+      "sort_ascending": false,
+      "limit": 5,
+      "chart": "bar"
+    },
+    "validated_plan": {
+      "operation": "groupby_aggregate",
+      "target_column": "Sales",
+      "group_by_columns": [
+        "Product Name"
+      ],
+      "aggregation": "sum",
+      "filters": [],
+      "sort_ascending": false,
+      "limit": 5,
+      "chart": "bar"
+    },
+    "pandas_result": {
+      "evidence_summary": "Canon imageCLASS 2200 Advanced Copier: 61,599.82 \u00b7 Fellowes PB500 Electric Punch Plastic Comb Binding Machine with Manual Bind: 27,453.38 \u00b7 Cisco TelePresence System EX90 Videoconferencing Unit: 22,638.48 \u00b7 HON 5400 Series Task Chairs for Big and Tall: 21,870.58 \u00b7 GBC DocuBind TL300 Electric Binding System: 19,823.48",
+      "evidence_df_sample": [
+        {
+          "Product Name": "Canon imageCLASS 2200 Advanced Copier",
+          "Sum of Sales": 61599.82399999999
+        },
+        {
+          "Product Name": "Fellowes PB500 Electric Punch Plastic Comb Binding Machine with Manual Bind",
+          "Sum of Sales": 27453.384
+        },
+        {
+          "Product Name": "Cisco TelePresence System EX90 Videoconferencing Unit",
+          "Sum of Sales": 22638.48
+        },
+        {
+          "Product Name": "HON 5400 Series Task Chairs for Big and Tall",
+          "Sum of Sales": 21870.576
+        },
+        {
+          "Product Name": "GBC DocuBind TL300 Electric Binding System",
+          "Sum of Sales": 19823.479
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "bar",
+    "direct_answer": "Canon imageCLASS 2200 Advanced Copier had the highest Sum of Sales (61,599.82).",
+    "explanation": "Based on the analysis, Canon imageCLASS 2200 Advanced Copier: 61,599.82 \u00b7 Fellowes PB500 Electric Punch Plastic Comb Binding Machine with Manual Bind: 27,453.38 \u00b7 Cisco TelePresence System EX90 Videoconferencing Unit: 22,638.48 \u00b7 HON 5400 Series Task Chairs for Big and Tall: 21,870.58 \u00b7 GBC DocuBind TL300 Electric Binding System: 19,823.48.",
+    "execution_time_ms": 1281.23
+  },
+  {
+    "query": "What is the average sales amount?",
+    "planner_output": {
+      "operation": "aggregation",
+      "target_column": "Sales",
+      "aggregation": "mean",
+      "filters": [],
+      "chart": "none"
+    },
+    "validated_plan": {
+      "operation": "aggregation",
+      "target_column": "Sales",
+      "aggregation": "mean",
+      "filters": [],
+      "chart": "none"
+    },
+    "pandas_result": {
+      "evidence_summary": "Mean of Sales: 228.23 (based on 10,194 records)",
+      "evidence_df_sample": [
+        {
+          "Metric": "Mean of Sales",
+          "Value": 228.23,
+          "Record Count": 10194
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "none",
+    "direct_answer": "The Mean Sales is 228.23.",
+    "explanation": "Based on the analysis, Mean of Sales: 228.23 (based on 10,194 records).",
+    "execution_time_ms": 166.47
+  },
+  {
+    "query": "Which category generated the highest profit?",
+    "planner_output": {
+      "operation": "groupby_aggregate",
+      "target_column": "Profit",
+      "group_by_columns": [
+        "Category"
+      ],
+      "aggregation": "sum",
+      "filters": [],
+      "sort_ascending": false,
+      "limit": 1,
+      "chart": "bar"
+    },
+    "validated_plan": {
+      "operation": "groupby_aggregate",
+      "target_column": "Profit",
+      "group_by_columns": [
+        "Category"
+      ],
+      "aggregation": "sum",
+      "filters": [],
+      "sort_ascending": false,
+      "limit": 1,
+      "chart": "bar"
+    },
+    "pandas_result": {
+      "evidence_summary": "Technology: 146,543.38",
+      "evidence_df_sample": [
+        {
+          "Category": "Technology",
+          "Sum of Profit": 146543.37559999997
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "bar",
+    "direct_answer": "Technology had the highest Sum of Profit (146,543.38).",
+    "explanation": "Based on the analysis, Technology: 146,543.38.",
+    "execution_time_ms": 203.04
+  },
+  {
+    "query": "Which region generated the highest total profit in the Technology category?",
+    "planner_output": {
+      "operation": "groupby_aggregate",
+      "target_column": "Profit",
+      "group_by_columns": [
+        "Region"
+      ],
+      "aggregation": "sum",
+      "filters": [
+        {
+          "column": "Category",
+          "operator": "==",
+          "value": "Technology"
+        }
+      ],
+      "sort_ascending": false,
+      "limit": 1,
+      "chart": "bar"
+    },
+    "validated_plan": {
+      "operation": "groupby_aggregate",
+      "target_column": "Profit",
+      "group_by_columns": [
+        "Region"
+      ],
+      "aggregation": "sum",
+      "filters": [
+        {
+          "column": "Category",
+          "operator": "==",
+          "value": "Technology"
+        }
+      ],
+      "sort_ascending": false,
+      "limit": 1,
+      "chart": "bar"
+    },
+    "pandas_result": {
+      "evidence_summary": "East: 48,441.78",
+      "evidence_df_sample": [
+        {
+          "Region": "East",
+          "Sum of Profit": 48441.775799999996
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "bar",
+    "direct_answer": "East had the highest Sum of Profit (48,441.78).",
+    "explanation": "Based on the analysis, East: 48,441.78. Filtered by Category == 'Technology'.",
+    "execution_time_ms": 215.0
+  },
+  {
+    "query": "Show monthly sales trends over time",
+    "planner_output": {
+      "operation": "trend",
+      "target_column": "Sales",
+      "aggregation": "sum",
+      "filters": [],
+      "date_column": "Order Date",
+      "time_granularity": "ME",
+      "chart": "line"
+    },
+    "validated_plan": {
+      "operation": "trend",
+      "target_column": "Sales",
+      "aggregation": "sum",
+      "filters": [],
+      "date_column": "Order Date",
+      "time_granularity": "ME",
+      "chart": "line"
+    },
+    "pandas_result": {
+      "evidence_summary": "2023-01-31: 14,518.06 \u00b7 2023-02-28: 4,519.89 \u00b7 2023-03-31: 56,933.91 \u00b7 2023-04-30: 28,295.35 \u00b7 ... (48 periods)",
+      "evidence_df_sample": [
+        {
+          "Period": "2023-01-31",
+          "Sum of Sales": 14518.055
+        },
+        {
+          "Period": "2023-02-28",
+          "Sum of Sales": 4519.892
+        },
+        {
+          "Period": "2023-03-31",
+          "Sum of Sales": 56933.909
+        },
+        {
+          "Period": "2023-04-30",
+          "Sum of Sales": 28295.345
+        },
+        {
+          "Period": "2023-05-31",
+          "Sum of Sales": 26319.767
+        },
+        {
+          "Period": "2023-06-30",
+          "Sum of Sales": 34669.4796
+        },
+        {
+          "Period": "2023-07-31",
+          "Sum of Sales": 33946.393
+        },
+        {
+          "Period": "2023-08-31",
+          "Sum of Sales": 28918.3385
+        },
+        {
+          "Period": "2023-09-30",
+          "Sum of Sales": 82670.4288
+        },
+        {
+          "Period": "2023-10-31",
+          "Sum of Sales": 32413.339
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "line",
+    "direct_answer": "Time-series trend of Sum of Sales computed across 48 periods.",
+    "explanation": "Based on the analysis, 2023-01-31: 14,518.06 \u00b7 2023-02-28: 4,519.89 \u00b7 2023-03-31: 56,933.91 \u00b7 2023-04-30: 28,295.35 \u00b7 ... (48 periods).",
+    "execution_time_ms": 244.72
+  },
+  {
+    "query": "What is the correlation between sales and profit?",
+    "planner_output": {
+      "operation": "correlation",
+      "target_columns": [
+        "Profit",
+        "Sales"
+      ],
+      "filters": [],
+      "chart": "scatter"
+    },
+    "validated_plan": {
+      "operation": "correlation",
+      "target_columns": [
+        "Profit",
+        "Sales"
+      ],
+      "filters": [],
+      "chart": "scatter"
+    },
+    "pandas_result": {
+      "evidence_summary": "Correlation between 'Profit' and 'Sales': 0.4815 (Moderate positive)",
+      "evidence_df_sample": [
+        {
+          "Column A": "Profit",
+          "Column B": "Sales",
+          "Pearson Correlation": 0.4815,
+          "Strength": "Moderate positive",
+          "Sample Size": 10194
+        }
+      ],
+      "is_unsupported": false
+    },
+    "visualization_type": "scatter",
+    "direct_answer": "The Pearson correlation is 0.4815 (Moderate positive).",
+    "explanation": "Based on the analysis, Correlation between 'Profit' and 'Sales': 0.4815 (Moderate positive).",
+    "execution_time_ms": 4936.63
+  }
+]

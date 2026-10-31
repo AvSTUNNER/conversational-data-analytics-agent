@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Settings — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}⚙️ System Configuration & Operational Settings{% endblock %}
+
+{% block content %}
+<!-- Security Notice -->
+<div class="card" style="border-left: 4px solid var(--accent-secondary); background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(22, 27, 38, 0.9)); margin-bottom: 1.5rem;">
+  <div style="display: flex; gap: 1rem; align-items: flex-start;">
+    <div style="font-size: 1.6rem; line-height: 1;">🔒</div>
+    <div>
+      <div style="font-weight: 700; font-size: 0.95rem; color: #60a5fa; margin-bottom: 0.25rem;">
+        Environment Variables Are The Single Source Of Truth
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+        Sensitive credentials (such as API keys and tokens) are configured strictly via environment variables (<code>.env</code>) and are never exposed or rendered in the browser.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Active Provider Selector -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <div class="card-title">🤖 Active LLM Provider Selection</div>
+    <span class="brand-badge" style="background-color: rgba(99, 102, 241, 0.2); color: #818cf8;">
+      Active: {{ state.active_provider | upper }}
+    </span>
+  </div>
+
+  <form method="POST" action="{{ url_for('settings_page') }}">
+    <div class="form-group" style="max-width: 520px; margin-bottom: 1.25rem;">
+      <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Select Provider Engine:</label>
+      <select name="provider" class="form-select">
+        <option value="ollama" {% if state.active_provider == 'ollama' %}selected{% endif %}>Local Ollama (Offline / Llama 3 / Qwen 2.5 / Mistral)</option>
+        <option value="gemini" {% if state.active_provider == 'gemini' %}selected{% endif %}>Google Gemini API (Free Tier / Gemini 1.5 Flash)</option>
+        <option value="groq" {% if state.active_provider == 'groq' %}selected{% endif %}>Groq Cloud API (High-Speed Inference / LLaMA 3.3)</option>
+        <option value="mock" {% if state.active_provider == 'mock' %}selected{% endif %}>Deterministic Mock Parser (Offline Test & Verification Mode)</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <button type="submit" class="btn btn-primary">
+        <span>Save Active Provider</span>
+      </button>
+      <span style="font-size: 0.8rem; color: var(--text-muted);">
+        Takes effect immediately for subsequent queries.
+      </span>
+    </div>
+  </form>
+</div>
+
+<!-- Provider Status Overview Table -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <div class="card-title">📋 Provider Configuration & Readiness Matrix</div>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-secondary);">
+          <th style="padding: 0.75rem 1rem;">Provider</th>
+          <th style="padding: 0.75rem 1rem;">Type</th>
+          <th style="padding: 0.75rem 1rem;">Target Model</th>
+          <th style="padding: 0.75rem 1rem;">Endpoint / Host</th>
+          <th style="padding: 0.75rem 1rem;">Credential Status</th>
+          <th style="padding: 0.75rem 1rem;">Readiness</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cfg in provider_configs %}
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--text-primary);">
+            {{ cfg.name }}
+            {% if state.active_provider == cfg.id %}
+              <span class="brand-badge" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.65rem; margin-left: 0.35rem;">ACTIVE</span>
+            {% endif %}
+          </td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">{{ cfg.type }}</td>
+          <td style="padding: 0.75rem 1rem; font-family: monospace; color: #38bdf8;">{{ cfg.model }}</td>
+          <td style="padding: 0.75rem 1rem; font-family: monospace; color: var(--text-muted); font-size: 0.8rem;">{{ cfg.endpoint }}</td>
+          <td style="padding: 0.75rem 1rem;">
+            {% if 'Missing' in cfg.auth_status %}
+              <span style="color: var(--accent-coral); font-weight: 600;">⚠️ {{ cfg.auth_status }}</span>
+            {% else %}
+              <span style="color: var(--accent-green); font-weight: 600;">✅ {{ cfg.auth_status }}</span>
+            {% endif %}
+          </td>
+          <td style="padding: 0.75rem 1rem;">
+            {% if cfg.ready %}
+              <span class="brand-badge" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399;">Ready</span>
+            {% else %}
+              <span class="brand-badge" style="background-color: rgba(255, 75, 75, 0.2); color: #f87171;">Unset</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Production & Runtime Environment Details -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <div class="card-title">🖥️ Runtime Environment & Security Policies</div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    <div class="stat-box">
+      <span class="stat-label">Environment</span>
+      <span class="stat-value" style="font-size: 1.1rem; color: #38bdf8;">{{ env_info.environment | upper }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Flask Debug Mode</span>
+      <span class="stat-value" style="font-size: 1.1rem; color: {% if env_info.debug %}var(--accent-coral){% else %}var(--accent-green){% endif %};">
+        {{ 'Enabled (Dev Only)' if env_info.debug else 'Disabled (Hardened)' }}
+      </span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Max Upload Limit</span>
+      <span class="stat-value" style="font-size: 1.1rem; color: var(--text-primary);">{{ env_info.max_upload_mb }} MB</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Server Binding</span>
+      <span class="stat-value" style="font-size: 1.1rem; font-family: monospace; color: var(--text-secondary);">{{ env_info.host }}:{{ env_info.port }}</span>
+    </div>
+  </div>
+
+  <div style="background-color: var(--bg-primary); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+    <strong>ℹ️ Session State Notice:</strong> Application state (active dataset, ingested CSV/Excel files, and generated RAG vector indices) is maintained in-process memory (<code>AppStateManager</code>). The system behaves predictably upon restart by safely defaulting back to the pre-packaged <code>Superstore Retail</code> dataset.
+  </div>
+</div>
+
+<!-- Maintenance & State Reset -->
+<div class="card" style="border-left: 4px solid var(--accent-coral);">
+  <div class="card-header">
+    <div class="card-title" style="color: #fca5a5;">⚠️ Maintenance & State Reset</div>
+  </div>
+  <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+    Resetting clears all in-memory query history, unloads any uploaded datasets, and restores the benchmark default state.
+  </p>
+  <div>
+    <a href="{{ url_for('reset_app_state') }}" class="btn btn-secondary" onclick="return confirm('Are you sure you want to reset the application state to factory defaults?');" style="border-color: rgba(255, 75, 75, 0.4); color: #fca5a5;">
+      <span>Reset Application State & Clear Cache 🔄</span>
+    </a>
+  </div>
+</div>
+{% endblock %}

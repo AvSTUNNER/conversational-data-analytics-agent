@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Ask Questions — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}💬 Ask Questions{% endblock %}
+
+{% block content %}
+<!-- 1. Dataset Overview Accordion -->
+{% if state.profile %}
+<div class="accordion">
+  <div class="accordion-header">
+    <span>📋 Dataset Overview: <strong>{{ state.dataset_name }}</strong> ({{ "{:,}".format(state.profile.row_count) }} rows × {{ state.profile.column_count }} cols)</span>
+    <span class="accordion-arrow">▼</span>
+  </div>
+  <div class="accordion-content" style="display: none;">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">Total Rows</span>
+        <span class="stat-value">{{ "{:,}".format(state.profile.row_count) }}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Total Columns</span>
+        <span class="stat-value">{{ state.profile.column_count }}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Duplicate Rows</span>
+        <span class="stat-value">{{ "{:,}".format(state.profile.duplicate_rows) }}</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Missing Values</span>
+        <span class="stat-value">{{ "{:,}".format(state.profile.total_null_values) }}</span>
+      </div>
+    </div>
+
+    <!-- Schema Preview Table -->
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Column Name</th>
+            <th>Type</th>
+            <th>Raw Dtype</th>
+            <th>Nulls</th>
+            <th>Unique Values</th>
+            <th>Sample Values</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for col_name, prof in state.profile.columns.items() %}
+          <tr>
+            <td><strong>{{ col_name }}</strong></td>
+            <td><span class="brand-badge">{{ prof.data_type.upper() }}</span></td>
+            <td><code>{{ prof.raw_dtype }}</code></td>
+            <td>{{ prof.null_count }} ({{ "%.1f"|format(prof.null_percentage) }}%)</td>
+            <td>{{ prof.unique_count }}</td>
+            <td style="color: var(--text-muted); font-size: 0.8rem;">
+              {{ prof.sample_values[:3]|join(', ') }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- 2. Interactive Query Form -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">🔍 Enter Natural Language Query</div>
+  </div>
+
+  <!-- Quick Suggestions -->
+  {% if examples %}
+  <div class="form-label" style="margin-bottom: 0.35rem;">💡 Quick Suggestions:</div>
+  <div class="suggestion-chips-container">
+    {% for ex in examples %}
+    <button type="button" class="suggestion-chip" data-query="{{ ex }}">
+      <span>⚡</span>
+      <span>{{ ex }}</span>
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Query Input Form -->
+  <form id="queryForm" method="POST" action="{{ url_for('run_query') }}">
+    <div class="form-group">
+      <input 
+        type="text" 
+        name="question" 
+        id="queryInput" 
+        class="form-input" 
+        placeholder="e.g., Which category generated the highest profit? / What is the average sales?" 
+        value="{{ current_query or '' }}" 
+        required 
+        autocomplete="off"
+      >
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <button type="submit" id="submitQueryBtn" class="btn btn-primary">
+        <span>Run Analysis 🚀</span>
+      </button>
+      <a href="{{ url_for('ask_page') }}" class="btn btn-secondary">
+        <span>Clear</span>
+      </a>
+    </div>
+  </form>
+
+  <!-- Spinner -->
+  <div class="spinner-container" id="spinnerContainer">
+    <div class="spinner"></div>
+    <span>Executing deterministic Pandas analysis...</span>
+  </div>
+</div>
+
+<!-- 3. Response Display (4-Part Standardized Output) -->
+{% if response %}
+  {% if response.error_message %}
+  <div class="card" style="border-left: 4px solid var(--accent-coral);">
+    <div class="card-title" style="color: var(--accent-coral);">⚠️ Error Encountered</div>
+    <p style="margin-top: 0.5rem; color: var(--text-primary);">{{ response.error_message }}</p>
+    {% if response.explanation %}
+    <p style="margin-top: 0.5rem; color: var(--text-secondary);">{{ response.explanation }}</p>
+    {% endif %}
+  </div>
+  {% elif response.is_unsupported %}
+  <div class="card" style="border-left: 4px solid var(--accent-amber);">
+    <div class="card-title" style="color: var(--accent-amber);">🚫 Unsupported Query</div>
+    <p style="margin-top: 0.5rem; font-size: 1.1rem; font-weight: 600;">{{ response.direct_answer }}</p>
+    <p style="margin-top: 0.5rem; color: var(--text-secondary);">{{ response.explanation }}</p>
+  </div>
+  {% else %}
+  <!-- PART 1: DIRECT ANSWER -->
+  <div class="direct-answer-banner">
+    <div class="direct-answer-header">📌 Direct Answer</div>
+    <div class="direct-answer-content">{{ response.direct_answer }}</div>
+  </div>
+
+  <!-- PART 2 & PART 3: SUPPORTING EVIDENCE & VISUALIZATION -->
+  <div class="response-grid">
+    <!-- Evidence Column -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔢 Supporting Evidence</div>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        <strong>Summary:</strong> {{ response.evidence_summary }}
+      </p>
+
+      {% if response.evidence_df is not none and not response.evidence_df.empty %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              {% for col in response.evidence_df.columns %}
+              <th>{{ col }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in response.evidence_df.itertuples(index=false) %}
+            <tr>
+              {% for val in row %}
+              <td>{{ "{:,.2f}".format(val) if val is number and val != (val|int) else val }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Chart Column -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📈 Interactive Visualization</div>
+      </div>
+      {% if chart_json %}
+      <div id="plotlyChartContainer" style="width: 100%; min-height: 380px;"></div>
+      {% else %}
+      <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+        <span>No visualization required for this operation type.</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PART 4: CONTEXT & EXPLANATION -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💡 Context & Grounded Explanation</div>
+    </div>
+    <p style="color: var(--text-primary); font-size: 0.95rem; line-height: 1.6;">
+      {{ response.explanation }}
+    </p>
+  </div>
+
+  <!-- PART 5: TRANSPARENCY & AUDIT INSPECTOR -->
+  <div class="accordion">
+    <div class="accordion-header">
+      <span>🔍 Plan Transparency & Execution Audit</span>
+      <span class="accordion-arrow">▼</span>
+    </div>
+    <div class="accordion-content" style="display: none;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
+        <div class="stat-box" style="padding: 0.75rem;">
+          <span class="stat-label">Detected Intent</span>
+          <span class="stat-value" style="font-size: 0.95rem; text-transform: uppercase; color: {% if response.intent == 'knowledge' %}var(--accent-purple){% elif response.intent == 'hybrid' %}var(--accent-amber){% else %}var(--accent-secondary){% endif %};">
+            {{ response.intent or 'ANALYTICAL' }}
+          </span>
+        </div>
+        <div class="stat-box" style="padding: 0.75rem;">
+          <span class="stat-label">RAG Retrieval</span>
+          <span class="stat-value" style="font-size: 0.95rem; color: {% if response.retrieval_used %}var(--accent-green){% else %}var(--text-muted){% endif %};">
+            {{ 'USED (' ~ response.retrieved_chunks|length ~ ' chunks)' if response.retrieval_used else 'NOT USED' }}
+          </span>
+        </div>
+        <div class="stat-box" style="padding: 0.75rem;">
+          <span class="stat-label">Execution Latency</span>
+          <span class="stat-value" style="font-size: 0.95rem; color: var(--text-primary);">
+            {{ "%.2f"|format(response.execution_time_ms) }} ms
+          </span>
+        </div>
+      </div>
+
+      {% if response.retrieved_chunks %}
+      <div style="margin-bottom: 1rem;">
+        <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+          📚 Retrieved Knowledge Chunks & Provenance:
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          {% for r in response.retrieved_chunks %}
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.6rem; font-size: 0.8rem;">
+            <div style="color: var(--accent-secondary); font-weight: 600; margin-bottom: 0.25rem;">
+              {{ r.section_title }} (Score: {{ "%.3f"|format(r.score) }})
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.35rem;">
+              Provenance: Dataset <code>{{ r.dataset_name }}</code> | Source: <code>{{ r.source_type|upper }}</code>
+            </div>
+            <pre style="white-space: pre-wrap; font-family: monospace; font-size: 0.75rem; color: var(--text-primary); margin: 0; background: var(--bg-card); padding: 0.4rem; border-radius: 3px;">{{ r.chunk.content }}</pre>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if plan_json_formatted %}
+      <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+        ⚙️ Validated AnalysisPlan JSON:
+      </div>
+      <pre class="json-view"><code>{{ plan_json_formatted }}</code></pre>
+      {% elif response.intent == 'knowledge' %}
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+        Analytical planner intentionally bypassed for knowledge-oriented question.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if chart_json %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const chartSpec = {{ chart_json|safe }};
+    if (chartSpec && chartSpec.data) {
+      // Apply dark theme template defaults to Plotly chart
+      chartSpec.layout = chartSpec.layout || {};
+      chartSpec.layout.paper_bgcolor = "transparent";
+      chartSpec.layout.plot_bgcolor = "transparent";
+      chartSpec.layout.font = { color: "#94a3b8", family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" };
+      chartSpec.layout.margin = { t: 40, r: 20, l: 40, b: 40 };
+      chartSpec.layout.autosize = true;
+
+      Plotly.newPlot("plotlyChartContainer", chartSpec.data, chartSpec.layout, { responsive: true, displayModeBar: true });
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}

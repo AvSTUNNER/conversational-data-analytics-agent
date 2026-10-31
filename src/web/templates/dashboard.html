@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}📈 Analytics Dashboard & Architecture Overview{% endblock %}
+
+{% block content %}
+<!-- Top Row: Operational Overview -->
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 1.5rem;">
+  
+  <!-- Active Dataset Card -->
+  <div class="stat-box" style="justify-content: flex-start; gap: 0.85rem; border-top: 3px solid var(--accent-secondary);">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <span class="stat-label" style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #38bdf8;">📊 Active Dataset</span>
+      <span class="brand-badge" style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4);">
+        {% if state.is_uploaded %}User Uploaded{% else %}Benchmark Preset{% endif %}
+      </span>
+    </div>
+    <div class="stat-value" style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); word-break: break-all;">
+      {{ state.dataset_name or 'No Dataset Active' }}
+    </div>
+    {% if state.profile %}
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary); width: 100%;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Records / Rows:</span>
+        <strong style="color: var(--text-primary);">{{ "{:,}".format(state.profile.row_count) }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Columns:</span>
+        <strong style="color: var(--text-primary);">{{ state.profile.column_count }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Duplicate Rows:</span>
+        <span style="color: {% if state.profile.duplicate_rows > 0 %}var(--accent-coral){% else %}var(--accent-green){% endif %}; font-weight: 600;">
+          {{ "{:,}".format(state.profile.duplicate_rows) }}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Active Sheet:</span>
+        <span style="color: var(--text-muted); font-family: monospace;">{{ state.selected_sheet }}</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Knowledge Status Card -->
+  <div class="stat-box" style="justify-content: flex-start; gap: 0.85rem; border-top: 3px solid var(--accent-purple);">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <span class="stat-label" style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #a78bfa;">🧠 Knowledge Layer</span>
+      {% if state.current_knowledge %}
+        {% if state.current_knowledge.source_type.value == 'user_supplied' %}
+          <span class="brand-badge" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">User-Supplied</span>
+        {% else %}
+          <span class="brand-badge" style="background-color: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">Auto-Generated</span>
+        {% endif %}
+      {% else %}
+        <span class="brand-badge" style="color: var(--text-muted);">None</span>
+      {% endif %}
+    </div>
+    
+    {% if state.current_knowledge %}
+    <div class="stat-value" style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">
+      {{ state.current_knowledge.dataset_name }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary); width: 100%;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Semantic Source:</span>
+        <strong style="color: var(--text-primary);">
+          {% if state.current_knowledge.source_type.value == 'user_supplied' %}
+            Authoritative Document
+          {% else %}
+            Dataset Facts & Inferred Tags
+          {% endif %}
+        </strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Observed Columns:</span>
+        <strong style="color: var(--text-primary);">{{ state.current_knowledge.observed.column_count }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Character Count:</span>
+        <span style="color: var(--text-muted);">{{ "{:,}".format(state.current_knowledge.get_full_text() | length) }} chars</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Numerical Truth:</span>
+        <span style="color: #38bdf8; font-weight: 600;">DataFrame / Pandas</span>
+      </div>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); font-size: 0.85rem;">No knowledge artifact loaded.</p>
+    {% endif %}
+  </div>
+
+  <!-- RAG Index Status Card -->
+  <div class="stat-box" style="justify-content: flex-start; gap: 0.85rem; border-top: 3px solid var(--accent-green);">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <span class="stat-label" style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: #34d399;">⚡ RAG Vector Store</span>
+      <span class="brand-badge" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
+        {% if index_status %}Synced & Active{% else %}Pending Sync{% endif %}
+      </span>
+    </div>
+    
+    {% if index_status %}
+    <div class="stat-value" style="font-size: 1.25rem; font-weight: 700; color: #34d399;">
+      {{ index_status.chunk_count }} Chunks Indexed
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary); width: 100%;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Vector Search Engine:</span>
+        <strong style="color: var(--text-primary);">Local TF-IDF Vector Space</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Index Fingerprint:</span>
+        <span style="font-family: monospace; color: var(--text-muted);">{{ index_status.fingerprint }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Dataset Isolation:</span>
+        <span style="color: var(--accent-green); font-weight: 600;">Strictly Isolated</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>External DB Required:</span>
+        <span style="color: var(--text-muted);">None (Zero-Cost Local)</span>
+      </div>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); font-size: 0.85rem;">Index synchronizing...</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Quick Navigation Action Bar -->
+<div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(22, 27, 38, 0.95), rgba(30, 41, 59, 0.8));">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+    <div>
+      <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">
+        🚀 Ready for Natural Language Analysis
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary);">
+        Ask conversational analytical questions, inspect raw data schemas, or manage domain knowledge documents.
+      </div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+      <a href="{{ url_for('ask_page') }}" class="btn btn-primary">
+        <span>Ask Questions 💬</span>
+      </a>
+      <a href="{{ url_for('dataset_page') }}" class="btn btn-secondary">
+        <span>Inspect Dataset 📁</span>
+      </a>
+      <a href="{{ url_for('knowledge_page') }}" class="btn btn-secondary">
+        <span>Manage Knowledge 🧠</span>
+      </a>
+      <a href="{{ url_for('pipeline_page') }}" class="btn btn-secondary">
+        <span>View Pipeline ⚡</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Middle Section: Capabilities & System Activity -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+  
+  <!-- Capabilities Card -->
+  <div class="card" style="margin-bottom: 0;">
+    <div class="card-header">
+      <div class="card-title">⚙️ Analysis & Reasoning Capabilities</div>
+      <span class="brand-badge" style="background-color: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);">
+        Deterministic
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; font-size: 0.85rem;">
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #38bdf8; margin-bottom: 0.25rem;">📐 Statistical Aggregations</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Sum, Mean, Median, Min, Max, Count computed strictly via Pandas.</div>
+      </div>
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #34d399; margin-bottom: 0.25rem;">📊 Categorical Grouping</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Multi-level groupby aggregations and segment comparisons.</div>
+      </div>
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #a78bfa; margin-bottom: 0.25rem;">🔍 Boolean Filtering</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Categorical matching, numeric thresholds, and date boundaries.</div>
+      </div>
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #f472b6; margin-bottom: 0.25rem;">🏆 Ranking & Top-N</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Ordered rankings, top/bottom performers with tie-handling.</div>
+      </div>
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #fbbf24; margin-bottom: 0.25rem;">📈 Interactive Visualizations</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Bar, line, scatter, box, pie charts rendered dynamically via Plotly.</div>
+      </div>
+      <div style="background-color: var(--bg-primary); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+        <div style="font-weight: 700; color: #4ade80; margin-bottom: 0.25rem;">🛡️ Strict Schema Validation</div>
+        <div style="color: var(--text-secondary); font-size: 0.8rem;">Pydantic JSON analysis plans validated before execution. Zero arbitrary code.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Activity & Recent Analysis -->
+  <div class="card" style="margin-bottom: 0;">
+    <div class="card-header">
+      <div class="card-title">📋 Session Activity & History</div>
+      <span class="brand-badge" style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa;">
+        {{ state.query_history | length }} Queries Executed
+      </span>
+    </div>
+
+    {% if state.query_history %}
+      <div style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem;">
+        {% for item in state.query_history | reverse %}
+          <div style="background-color: var(--bg-primary); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-weight: 600; font-size: 0.9rem; color: #38bdf8; margin-bottom: 0.25rem;">
+              💬 {{ item.question }}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              {{ item.answer }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💬</div>
+        <div style="font-weight: 600; color: var(--text-secondary);">No queries run in this session yet.</div>
+        <div style="font-size: 0.8rem; margin-top: 0.25rem;">Head over to the Ask page to submit your first analytical question.</div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Bottom Section: Preset Quick Switcher -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">⚡ Available Benchmark Datasets</div>
+    <span style="font-size: 0.8rem; color: var(--text-muted);">Six pre-configured production & edge-case datasets</span>
+  </div>
+  <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+    {% for name, info in presets.items() %}
+    <div class="stat-box" style="justify-content: space-between; border-left: 3px solid {% if state.dataset_name == name %}var(--accent-green){% else %}var(--border-color){% endif %};">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
+          <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-primary);">{{ name }}</div>
+          {% if state.dataset_name == name %}
+            <span class="brand-badge" style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.7rem;">Active</span>
+          {% endif %}
+        </div>
+        <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 600; margin-bottom: 0.35rem;">{{ info.domain }}</div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">{{ info.description }}</div>
+      </div>
+      <form method="POST" action="{{ url_for('switch_preset') }}">
+        <input type="hidden" name="preset_name" value="{{ name }}">
+        <button type="submit" class="btn {% if state.dataset_name == name %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="width: 100%;">
+          <span>{% if state.dataset_name == name %}Active Dataset Loaded{% else %}Switch to this Dataset{% endif %}</span>
+        </button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

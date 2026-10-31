@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}500 Internal Server Error — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}⚠️ Server Error{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 3rem 1.5rem; max-width: 600px; margin: 2rem auto; border-top: 4px solid var(--accent-coral);">
+  <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+  <h2 style="font-size: 1.5rem; color: #fca5a5; margin-bottom: 0.5rem;">500 — Internal Server Error</h2>
+  <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">
+    An internal exception occurred during processing. For security, raw error traces and server paths are suppressed. Please try reloading the dataset or return to the ask page.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ url_for('ask_page') }}" class="btn btn-primary">
+      <span>Return to Ask Questions 💬</span>
+    </a>
+    <a href="{{ url_for('reset_app_state') }}" class="btn btn-secondary">
+      <span>Reset Application State 🔄</span>
+    </a>
+  </div>
+</div>
+{% endblock %}

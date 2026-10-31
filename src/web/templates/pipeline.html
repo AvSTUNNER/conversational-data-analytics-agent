@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Pipeline Architecture — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}⚡ System Pipeline Architecture & Execution Flow{% endblock %}
+
+{% block content %}
+
+<!-- Trust Boundary Callout Banner -->
+<div class="card" style="border-left: 4px solid var(--accent-coral); background: linear-gradient(135deg, rgba(255, 75, 75, 0.08), rgba(22, 27, 38, 0.9)); margin-bottom: 1.5rem;">
+  <div style="display: flex; gap: 1rem; align-items: flex-start;">
+    <div style="font-size: 1.8rem; line-height: 1;">🛡️</div>
+    <div>
+      <div style="font-weight: 700; font-size: 1rem; color: #fca5a5; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em;">
+        Critical Trust Boundary & Numerical Authority
+      </div>
+      <div style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.6;">
+        <strong>"Retrieved knowledge provides semantic context only. Numerical truth comes from the active DataFrame through deterministic Pandas execution."</strong>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.5;">
+        Retrieved domain text never overrides DataFrame values, and the LLM is never permitted to perform numerical calculations or arbitrary code generation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- High-Level Flow Header Card -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📐 Three Distinct Architectural Execution Flows</div>
+    <span class="brand-badge" style="background-color: rgba(99, 102, 241, 0.2); color: #818cf8;">
+      Lightweight Query Routing
+    </span>
+  </div>
+  <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+    The system uses an intelligent <code>QueryRouter</code> to determine the exact processing pathway based on the query's intent. Unlike naive RAG systems that query vector stores on every interaction, our architecture only retrieves when semantic definitions are required, protecting analytical queries from context hallucination.
+  </p>
+
+  <!-- 3 Path Columns -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+    
+    <!-- Path 1: Knowledge-Oriented -->
+    <div style="background-color: var(--bg-primary); border-radius: var(--radius-md); border: 1px solid rgba(139, 92, 246, 0.3); padding: 1.25rem; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span class="brand-badge" style="background-color: rgba(139, 92, 246, 0.2); color: #c084fc; font-weight: 700;">1. KNOWLEDGE</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Definitions / Metadata</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        Questions about column definitions, business rules, or dataset summaries.
+      </div>
+      
+      <!-- Stepper -->
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; flex-grow: 1;">
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #c084fc;">
+          <strong style="color: var(--text-primary);">User Query</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #c084fc;">
+          <strong style="color: var(--text-primary);">Query Router</strong> (Intent: KNOWLEDGE)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #c084fc;">
+          <strong style="color: #c084fc;">Knowledge Retriever</strong> (TF-IDF Vector Store)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #10b981;">
+          <strong style="color: #34d399;">Grounded Direct Answer</strong> (with Provenance)
+        </div>
+      </div>
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #a78bfa;">
+        ⚡ <strong>Planner & Pandas Bypassed</strong> (Zero unnecessary computation)
+      </div>
+    </div>
+
+    <!-- Path 2: Analytical -->
+    <div style="background-color: var(--bg-primary); border-radius: var(--radius-md); border: 1px solid rgba(59, 130, 246, 0.3); padding: 1.25rem; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span class="brand-badge" style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; font-weight: 700;">2. ANALYTICAL</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Math / Aggregates / Trends</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        Questions requiring mathematical calculation, groupings, filters, or rankings.
+      </div>
+      
+      <!-- Stepper -->
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; flex-grow: 1;">
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #60a5fa;">
+          <strong style="color: var(--text-primary);">User Query</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #60a5fa;">
+          <strong style="color: var(--text-primary);">Query Router</strong> (Intent: ANALYTICAL)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #60a5fa;">
+          <strong style="color: #60a5fa;">Existing Analysis Planner</strong> (JSON Plan)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #60a5fa;">
+          <strong style="color: #60a5fa;">Plan Validator</strong> (Pydantic Schema Check)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #10b981;">
+          <strong style="color: #34d399;">Pandas Engine & Plotly Visualizer</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #10b981;">
+          <strong style="color: #34d399;">LLM Result Explanation</strong>
+        </div>
+      </div>
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #60a5fa;">
+        ⚡ <strong>RAG Retriever Bypassed</strong> (Zero retrieval noise or prompt clutter)
+      </div>
+    </div>
+
+    <!-- Path 3: Hybrid -->
+    <div style="background-color: var(--bg-primary); border-radius: var(--radius-md); border: 1px solid rgba(245, 158, 11, 0.3); padding: 1.25rem; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span class="brand-badge" style="background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; font-weight: 700;">3. HYBRID</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Definitions + Math</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        Queries needing domain business context to inform the mathematical plan.
+      </div>
+      
+      <!-- Stepper -->
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; flex-grow: 1;">
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #fbbf24;">
+          <strong style="color: var(--text-primary);">User Query</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #fbbf24;">
+          <strong style="color: var(--text-primary);">Query Router</strong> (Intent: HYBRID)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #c084fc;">
+          <strong style="color: #c084fc;">Knowledge Retriever</strong> (Top-K Chunks)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #fbbf24;">
+          <strong style="color: #fbbf24;">Reference Context Injected</strong> (Trust Bound)
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #60a5fa;">
+          <strong style="color: #60a5fa;">Existing Analysis Planner & Validation</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #10b981;">
+          <strong style="color: #34d399;">Pandas Engine & Visualizer</strong>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">↓</div>
+        <div style="background-color: var(--bg-card); padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid #10b981;">
+          <strong style="color: #34d399;">Grounded Explanation</strong> (with Provenance)
+        </div>
+      </div>
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: #fbbf24;">
+        ⚡ <strong>Dual Integration</strong> (Semantic context informs planner, Pandas calculates)
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Architectural Execution Matrix -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📊 Execution & Responsibility Decision Matrix</div>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-secondary);">
+          <th style="padding: 0.75rem 1rem;">Intent Pathway</th>
+          <th style="padding: 0.75rem 1rem;">RAG Retriever</th>
+          <th style="padding: 0.75rem 1rem;">Analysis Planner</th>
+          <th style="padding: 0.75rem 1rem;">Pandas Execution</th>
+          <th style="padding: 0.75rem 1rem;">Numerical Authority</th>
+          <th style="padding: 0.75rem 1rem;">Final Output Artifact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <td style="padding: 0.75rem 1rem; font-weight: 700; color: #c084fc;">KNOWLEDGE</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (Top-K)</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-muted);">❌ Bypassed</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-muted);">❌ Bypassed</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-secondary);">Knowledge Artifact</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-primary);">Grounded text with chunk citations</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <td style="padding: 0.75rem 1rem; font-weight: 700; color: #60a5fa;">ANALYTICAL</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-muted);">❌ Bypassed</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (JSON Plan)</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (Deterministic)</td>
+          <td style="padding: 0.75rem 1rem; font-weight: 600; color: #38bdf8;">DataFrame / Pandas Engine</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-primary);">Calculated number/table + Plotly chart + LLM explanation</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem 1rem; font-weight: 700; color: #fbbf24;">HYBRID</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (Top-K)</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (Context-Guided)</td>
+          <td style="padding: 0.75rem 1rem; color: var(--accent-green);">✅ Active (Deterministic)</td>
+          <td style="padding: 0.75rem 1rem; font-weight: 600; color: #38bdf8;">DataFrame / Pandas Engine</td>
+          <td style="padding: 0.75rem 1rem; color: var(--text-primary);">Calculated table/chart + Grounded explanation with citations</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Architecture Diagram (Monospace ASCII) -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">🖥️ End-to-End Architectural Dataflow</div>
+  </div>
+
+  <div style="background-color: var(--bg-primary); padding: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: monospace; font-size: 0.85rem; color: #38bdf8; line-height: 1.8; overflow-x: auto;">
+User Query<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+Query Router<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── [KNOWLEDGE] ──► KnowledgeRetriever ──► Grounded Answer (Planner &amp; Pandas Bypassed)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── [ANALYTICAL] ─► Existing Planner ──► Validation ──► Pandas Execution ──► Chart &amp; Explanation (RAG Bypassed)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── [HYBRID] ─────► KnowledgeRetriever ──► Reference Context Injected<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Existing Planner ──► Validation ──► Pandas Execution ──► Chart &amp; Grounded Explanation
+  </div>
+</div>
+{% endblock %}

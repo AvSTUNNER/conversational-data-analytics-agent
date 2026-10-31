@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Dataset Management — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}📁 Dataset Management & Ingestion{% endblock %}
+
+{% block content %}
+<!-- Ingestion Options: Presets vs Local Upload Grid -->
+<div class="response-grid">
+  <!-- 1. Preset Selector Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🔄 Preset Benchmark Datasets</div>
+    </div>
+    <form method="POST" action="{{ url_for('switch_preset') }}">
+      <div class="form-group">
+        <label class="form-label">Select Pre-configured Dataset:</label>
+        <select name="preset_name" class="form-select" onchange="this.form.submit()">
+          {% for name, info in presets.items() %}
+          <option value="{{ name }}" {% if state.dataset_name == name %}selected{% endif %}>
+            {{ name }} ({{ info.domain }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+      Includes Superstore Retail (.xls), Telco Churn (.csv), Online Shoppers (.csv), Online Retail (.xlsx), Synthetic Business (.csv), and Messy Business (.csv).
+    </p>
+  </div>
+
+  <!-- 2. Local File Upload Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📤 Upload Local Dataset</div>
+    </div>
+    <form method="POST" action="{{ url_for('upload_dataset') }}" enctype="multipart/form-data">
+      <div class="form-group">
+        <label class="form-label">Choose CSV, XLS, or XLSX file:</label>
+        <input type="file" name="file" class="form-input" accept=".csv,.xls,.xlsx" required style="padding: 0.5rem;">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        <span>Upload & Ingest File 🚀</span>
+      </button>
+    </form>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+      Supports arbitrary structured datasets. Sheet selection is available for Excel workbooks.
+    </p>
+  </div>
+</div>
+
+<!-- Active Dataset Status & Sheet Picker -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <span>📊 Active Dataset: <strong>{{ state.dataset_name }}</strong></span>
+      {% if state.is_uploaded %}
+      <span class="brand-badge" style="background: var(--accent-purple);">USER UPLOADED</span>
+      {% else %}
+      <span class="brand-badge">PRESET BENCHMARK</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if state.available_sheets and state.available_sheets|length > 1 %}
+  <div style="background-color: var(--bg-card); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+    <form method="POST" action="{{ url_for('switch_sheet') }}" style="display: flex; align-items: center; gap: 1rem;">
+      <label class="form-label" style="margin-bottom: 0; white-space: nowrap;">📖 Select Workbook Sheet:</label>
+      <select name="sheet_name" class="form-select" onchange="this.form.submit()" style="max-width: 300px;">
+        {% for sheet in state.available_sheets %}
+        <option value="{{ sheet }}" {% if state.selected_sheet == sheet %}selected{% endif %}>
+          {{ sheet }}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if state.profile %}
+  <div class="stats-grid">
+    <div class="stat-box">
+      <span class="stat-label">Total Records</span>
+      <span class="stat-value">{{ "{:,}".format(state.profile.row_count) }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Total Columns</span>
+      <span class="stat-value">{{ state.profile.column_count }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Numeric Features</span>
+      <span class="stat-value">{{ state.profile.numeric_columns|length }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Categorical Features</span>
+      <span class="stat-value">{{ state.profile.categorical_columns|length }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Duplicate Rows</span>
+      <span class="stat-value">{{ "{:,}".format(state.profile.duplicate_rows) }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Missing Values</span>
+      <span class="stat-value">{{ "{:,}".format(state.profile.total_null_values) }}</span>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Raw Data Preview Table -->
+{% if raw_preview_rows %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">🔍 Data Preview (First 15 Rows)</div>
+  </div>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          {% for col in raw_preview_cols %}
+          <th>{{ col }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in raw_preview_rows %}
+        <tr>
+          {% for val in row %}
+          <td>{{ val }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Inferred Schema Breakdown -->
+{% if state.profile %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Inferred Schema & Column Classifications</div>
+  </div>
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Column Name</th>
+          <th>Inferred Type</th>
+          <th>Raw Dtype</th>
+          <th>Nulls</th>
+          <th>Unique Count</th>
+          <th>Details / Ranges</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for col_name, prof in state.profile.columns.items() %}
+        <tr>
+          <td><strong>{{ col_name }}</strong></td>
+          <td><span class="brand-badge">{{ prof.data_type.upper() }}</span></td>
+          <td><code>{{ prof.raw_dtype }}</code></td>
+          <td>{{ prof.null_count }} ({{ "%.1f"|format(prof.null_percentage) }}%)</td>
+          <td>{{ prof.unique_count }}</td>
+          <td style="font-size: 0.8rem; color: var(--text-muted);">
+            {% if prof.numeric_stats %}
+            Min: {{ prof.numeric_stats.min }} | Max: {{ prof.numeric_stats.max }} | Mean: {{ "%.2f"|format(prof.numeric_stats.mean) }}
+            {% elif prof.date_range %}
+            Span: {{ prof.date_range.min_date }} to {{ prof.date_range.max_date }}
+            {% else %}
+            Samples: {{ prof.sample_values[:3]|join(', ') }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

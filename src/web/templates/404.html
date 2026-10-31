@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}404 Not Found — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}🔍 Page Not Found{% endblock %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding: 3rem 1.5rem; max-width: 600px; margin: 2rem auto;">
+  <div style="font-size: 4rem; margin-bottom: 1rem;">🧭</div>
+  <h2 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.5rem;">404 — Page Not Found</h2>
+  <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">
+    The requested endpoint or view does not exist in the application. Please check the URL or use the navigation sidebar to return to the active workflow.
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ url_for('ask_page') }}" class="btn btn-primary">
+      <span>Go to Ask Questions 💬</span>
+    </a>
+    <a href="{{ url_for('dashboard_page') }}" class="btn btn-secondary">
+      <span>View Dashboard 📈</span>
+    </a>
+  </div>
+</div>
+{% endblock %}

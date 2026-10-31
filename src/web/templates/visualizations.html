@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Visualizations — Conversational Data Analysis Assistant{% endblock %}
+{% block page_header %}📊 Interactive Visualizations{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📈 Recent Analysis Chart</div>
+    {% if chart_type and chart_type != 'none' %}
+    <span class="brand-badge">{{ chart_type|upper }} CHART</span>
+    {% endif %}
+  </div>
+
+  {% if chart_json %}
+  <div id="fullPlotlyContainer" style="width: 100%; min-height: 520px;"></div>
+  {% else %}
+  <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📊</div>
+    <p>No interactive visualization currently active.</p>
+    <p style="font-size: 0.85rem; margin-top: 0.5rem;">Run an analytical question in the <a href="{{ url_for('ask_page') }}" style="color: var(--accent-secondary);">Ask Questions</a> tab to generate a chart.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if chart_json %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const chartSpec = {{ chart_json|safe }};
+    if (chartSpec && chartSpec.data) {
+      chartSpec.layout = chartSpec.layout || {};
+      chartSpec.layout.paper_bgcolor = "transparent";
+      chartSpec.layout.plot_bgcolor = "transparent";
+      chartSpec.layout.font = { color: "#94a3b8", family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto" };
+      chartSpec.layout.autosize = true;
+
+      Plotly.newPlot("fullPlotlyContainer", chartSpec.data, chartSpec.layout, { responsive: true, displayModeBar: true });
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}
