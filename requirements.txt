@@ -1,4 +1,4 @@
-# Conversational Data Analysis Assistant Dependencies (Production & Vercel Serverless)
+# Conversational Data Analysis Assistant Dependencies (Production, Vercel & Netlify Serverless)
 
 # Core Numerical & Data Processing
 pandas>=2.2.0
@@ -13,6 +13,7 @@ pydantic-settings>=2.2.0
 # Web Application & Visualizations
 flask>=3.0.0
 plotly>=5.20.0
+serverless-wsgi>=3.0.0
 
 # LLM Providers & API Clients
 requests>=2.31.0
