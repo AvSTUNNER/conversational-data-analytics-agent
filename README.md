@@ -15,28 +15,15 @@ An enterprise-grade conversational data analysis system designed to translate na
 
 > **The Fundamental Rule**: The LLM decides *what* analysis to run; Pandas deterministically calculates *all numbers*.
 
+### End-to-End Execution Pipeline
+<p align="center">
+  <img src="architecture_pipeline.png" alt="Conversational Query Routing & Analysis Pipeline" width="100%">
+</p>
+
+### Dual-Engine System Architecture
 <p align="center">
   <img src="architecture_flowchart.png" alt="Dual-Engine Architecture Flowchart" width="100%">
 </p>
-
-```
-┌─────────────────┐       ┌───────────────────────┐       ┌────────────────────────┐
-│ User Query & CSV│ ────> │ Semantic Query Router │ ────> │  LLM Analysis Planner  │
-└─────────────────┘       └───────────────────────┘       └────────────────────────┘
-                                      │                                │
-                                      │ (Knowledge Queries)            ▼ Structured AnalysisPlan (JSON)
-                                      ▼                   ┌────────────────────────┐
-                          ┌───────────────────────┐       │  Strict Plan Validator │ (AST Trust Boundary)
-                          │ Local RAG Vector Store│       └────────────────────────┘
-                          └───────────────────────┘                    │
-                                      │                                ▼ Approved Execution Plan
-                                      │                   ┌────────────────────────┐
-                                      ▼                   │  Deterministic Pandas  │
-┌─────────────────┐       ┌───────────────────────┐       │    Execution Engine    │
-│ 4-Part Response │ <──── │ Interactive Plotly/UI │ <──── └────────────────────────┘
-│ (Answer+Table)  │       │    Chart Generator    │
-└─────────────────┘       └───────────────────────┘
-```
 
 1. **Zero LLM Code Execution**: No `eval()`, `exec()`, or runtime script execution.
 2. **100% Deterministic Mathematical Grounding**: All calculations (sums, averages, correlations, outliers, groupings) are executed by verified Pandas/NumPy routines.
@@ -61,7 +48,7 @@ An enterprise-grade conversational data analysis system designed to translate na
 Clone the repository and install the dependencies:
 ```bash
 git clone <repository-url>
-cd "Conversational Data Anakytics Agent"
+cd "Conversational Data Analytics Agent"
 
 # Create and activate virtual environment
 python -m venv venv
