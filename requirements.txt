@@ -5,15 +5,16 @@ pandas>=2.2.0
 numpy>=1.26.0
 openpyxl>=3.1.2
 xlrd>=2.0.1
+scikit-learn>=1.4.0
 
 # Validation & Data Models
 pydantic>=2.6.0
 pydantic-settings>=2.2.0
 
 # Visualization & Frontend UI
-streamlit>=1.35.0
 flask>=3.0.0
 plotly>=5.20.0
+streamlit>=1.35.0
 
 # LLM Providers & API Clients (Provider-agnostic)
 requests>=2.31.0

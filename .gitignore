@@ -37,3 +37,5 @@ Thumbs.db
 # Vercel
 .vercel/
 
+# Large non-demo dataset files (prevents Vercel serverless size exceed)
+datasets/validation/online_retail.xlsx
