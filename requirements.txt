@@ -1,26 +1,20 @@
-# Conversational Data Analysis Assistant Dependencies (HCL P_123)
+# Conversational Data Analysis Assistant Dependencies (Production & Vercel Serverless)
 
-# Core Data & Numerical Engine
+# Core Numerical & Data Processing
 pandas>=2.2.0
 numpy>=1.26.0
 openpyxl>=3.1.2
 xlrd>=2.0.1
-scikit-learn>=1.4.0
 
 # Validation & Data Models
 pydantic>=2.6.0
 pydantic-settings>=2.2.0
 
-# Visualization & Frontend UI
+# Web Application & Visualizations
 flask>=3.0.0
 plotly>=5.20.0
-streamlit>=1.35.0
 
-# LLM Providers & API Clients (Provider-agnostic)
+# LLM Providers & API Clients
 requests>=2.31.0
 google-genai>=0.1.1
 python-dotenv>=1.0.1
-
-# Testing & Quality Assurance
-pytest>=8.0.0
-pytest-cov>=4.1.0
