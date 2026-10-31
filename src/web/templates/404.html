@@ -10,15 +10,6 @@
   <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">
     The requested endpoint or view does not exist in the application. Please check the URL or use the navigation sidebar to return to the active workflow.
   </p>
-
-  <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; font-family: monospace; font-size: 0.85rem; color: #a5b4fc;">
-    <div><strong>Requested URL:</strong> {{ request.url }}</div>
-    <div><strong>Request Path:</strong> {{ request.path }}</div>
-    <div><strong>Request Full Path:</strong> {{ request.full_path }}</div>
-    <div><strong>PATH_INFO:</strong> {{ request.environ.get('PATH_INFO') }}</div>
-    <div><strong>SCRIPT_NAME:</strong> {{ request.environ.get('SCRIPT_NAME') }}</div>
-  </div>
-
   <div style="display: flex; gap: 1rem; justify-content: center;">
     <a href="{{ url_for('ask_page') }}" class="btn btn-primary">
       <span>Go to Ask Questions 💬</span>

@@ -1,7 +1,6 @@
 """WSGI entrypoint for Vercel Serverless Functions."""
 import os
 import sys
-import urllib.parse
 from pathlib import Path
 
 # Add project root to sys.path
@@ -14,44 +13,29 @@ os.chdir(str(PROJECT_ROOT))
 
 from src.web.app import create_app
 
-flask_app = create_app()
+app = create_app()
 
-class VercelPathFixer:
-    """WSGI middleware ensuring proper PATH_INFO routing when Vercel rewrites requests."""
+@app.route("/api/index", defaults={"subpath": ""}, methods=["GET", "POST", "PUT", "DELETE"])
+@app.route("/api/index/<path:subpath>", methods=["GET", "POST", "PUT", "DELETE"])
+def vercel_entrypoint_router(subpath: str = ""):
+    """Explicitly catches all Vercel-routed requests to /api/index and forwards to Flask views."""
+    from flask import request
 
-    def __init__(self, wsgi_app):
-        self.wsgi_app = wsgi_app
+    target = request.args.get("__vercel_route__") or subpath
+    if not target or target.strip("/") == "":
+        target = "ask"
+    else:
+        target = target.lstrip("/")
 
-    def __call__(self, environ, start_response):
-        qs = environ.get("QUERY_STRING", "")
-        params = urllib.parse.parse_qs(qs)
-        
-        # 1. If Vercel passed __vercel_route__, restore the true requested route
-        if "__vercel_route__" in params:
-            route_val = params.pop("__vercel_route__")[0]
-            if not route_val.startswith("/"):
-                route_val = "/" + route_val
-            environ["PATH_INFO"] = route_val
-            # Reconstruct clean QUERY_STRING without internal routing parameter
-            clean_pairs = []
-            for k, vals in params.items():
-                for v in vals:
-                    clean_pairs.append(f"{urllib.parse.quote(k)}={urllib.parse.quote(v)}")
-            environ["QUERY_STRING"] = "&".join(clean_pairs)
-        else:
-            # 2. Fallback prefix cleaning
-            path = environ.get("PATH_INFO", "")
-            prefixes = ["/api/index.py", "/api/index", "/api"]
-            for prefix in prefixes:
-                if path == prefix:
-                    path = "/"
-                    break
-                elif path.startswith(prefix + "/"):
-                    path = path[len(prefix):]
-                    break
-            environ["PATH_INFO"] = path or "/"
+    # Forward to the underlying Flask view cleanly
+    with app.test_client() as client:
+        resp = client.open(
+            "/" + target,
+            method=request.method,
+            data=request.get_data(),
+            headers=dict(request.headers),
+            query_string=request.query_string.decode("utf-8", errors="ignore"),
+        )
+        return resp.get_data(), resp.status_code, list(resp.headers.items())
 
-        return self.wsgi_app(environ, start_response)
-
-app = VercelPathFixer(flask_app)
 application = app
