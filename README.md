@@ -5,8 +5,9 @@
 
 [![Vercel Deployment](https://img.shields.io/badge/Deployed-Vercel%20Production-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://conversational-data-analytics-agent-coral.vercel.app)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Flask 3.0](https://img.shields.io/badge/Frontend-Flask%20%2B%20Plotly-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![LLM: Groq / Gemini](https://img.shields.io/badge/LLM-Groq%20%7C%20Gemini%20%7C%20Ollama-F55036?style=for-the-badge)](https://groq.com/)
+[![Web UI: Flask + Plotly](https://img.shields.io/badge/Frontend-Flask%20%2B%20Plotly-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Backend Engine](https://img.shields.io/badge/Backend-Flask%20%2F%20FastAPI%20Architecture-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![LLM: Groq / Gemini / Ollama](https://img.shields.io/badge/LLM-Groq%20%7C%20Gemini%20%7C%20Ollama-F55036?style=for-the-badge)](https://groq.com/)
 [![RAG Architecture](https://img.shields.io/badge/Engine-Local%20TF--IDF%20RAG-8A2BE2?style=for-the-badge)](https://scikit-learn.org/)
 [![Test Suite](https://img.shields.io/badge/Pytest-123%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
@@ -147,10 +148,20 @@ GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
 ### 4. Launch the Web Application
+
+#### Option A: Run Locally via Flask Runner
 ```bash
 python app_flask.py
 ```
 Open **[http://localhost:5000](http://localhost:5000)** in your browser.
+
+#### Option B: Deploy or Access via Vercel Production
+The system is fully configured for serverless production deployment on Vercel:
+- **Live Production URL:** [https://conversational-data-analytics-agent-coral.vercel.app](https://conversational-data-analytics-agent-coral.vercel.app)
+- **Local Vercel CLI Emulation:**
+  ```bash
+  vercel dev
+  ```
 
 ---
 
